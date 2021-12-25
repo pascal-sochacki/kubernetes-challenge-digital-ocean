@@ -7,7 +7,5 @@ GitOps is today the way you automate deployment pipelines within Kubernetes itse
 
 #### Let's see how this goes:
 
-`Log[0]:` 
-
-Create a Terraform file(s) for my Kubernetes cluster in DigitalOcean
+`Log[0]:` Create a Terraform file(s) for my Kubernetes cluster in DigitalOcean
 
