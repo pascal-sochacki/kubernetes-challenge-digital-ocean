@@ -1,2 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
+metadata:
+  name: ci-cd
+spec:
+  destination:
+    name: ''
+    namespace: ci-cd
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: ci-cd
+    repoURL: 'https://github.com/pascal-sochacki/kubernetes-challenge-digital-ocean'
+    targetRevision: main
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

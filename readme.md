@@ -9,6 +9,6 @@ GitOps is today the way you automate deployment pipelines within Kubernetes itse
 
 `Log[0]:` Create a Terraform file(s) for my Kubernetes cluster in DigitalOcean.
 
-`Log[1]:` Install ArgoCD, Harbor and Tekton. Create an ArgoCD 
+`Log[1]:` Install ArgoCD, Harbor and Tekton. Create an ArgoCD sync for pipeline resources
 
 
