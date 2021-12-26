@@ -1,0 +1,13 @@
+apiVersion: v2
+name: infra
+description: A Helm chart for Kubernetes infrastructure
+type: application
+version: 0.1.2
+dependencies:
+  - name: argo-cd
+    version: 3.29.4
+    repository: https://argoproj.github.io/argo-helm
+  - name: harbor
+    version: v1.8.1
+    repository: https://helm.goharbor.io
+

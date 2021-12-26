@@ -6,3 +6,6 @@
 .terraform
 
 export.sh
+
+infra/*.lock
+infra/charts

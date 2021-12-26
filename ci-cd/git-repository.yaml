@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: git-app-repository
+spec:
+  type: git
+  params:
+  - name: url
+    value: https://github.com/pascal-sochacki/http2
+  - name: revision
+    value: master
