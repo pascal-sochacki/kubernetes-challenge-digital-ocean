@@ -13,3 +13,11 @@ GitOps is today the way you automate deployment pipelines within Kubernetes itse
 
 `Log[2]:` Create a GitOps CI/CD pipeline using ArgoCD and Tekton.
 
+#### Gotchas:
+
+Well it turns out that ArgoCD wants to manage all(?) resources in the namespace. 
+So ArgoCD deleted my TaskRuns and PipelineRuns. I thought this was a tekton issue, but it's not.
+This took me a while to figure out (2-3h). 
+I found a [Github issue](https://github.com/tektoncd/pipeline/issues/3202) and a [useful answer](https://github.com/tektoncd/pipeline/issues/3202#issuecomment-718802883), which I followed and it works.
+The fix is to configure the default ArgoCD Project (or the Project you use) to ignore some resources.
+see `argocd/defaultProject.yaml`
