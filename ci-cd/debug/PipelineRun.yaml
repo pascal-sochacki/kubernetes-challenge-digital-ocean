@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: debug-pipeline-run
+spec:
+  pipelineRef:
+    name: my-pipeline
+  resources:
+    - name: git-app-repository
+      resourceRef:
+        name: git-app-repository

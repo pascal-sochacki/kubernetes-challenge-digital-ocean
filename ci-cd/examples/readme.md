@@ -7,8 +7,7 @@ Steps to run this example:
 
 ```
 ➜  examples git:(main) ✗ tkn taskrun describe hello-run
-Name:              hello-run
-Namespace:         default
+Name:              hello-runNamespace:         default
 Task Ref:          hello
 Service Account:   default
 Timeout:           1h0m0s

@@ -8,9 +8,6 @@ spec:
     inputs:
       - name: git-app-repository
         type: git
-    outputs:
-      - name: image-repository
-        type: image
   params:
     - name: pathToDockerFile
       description: Path to Dockerfile
@@ -18,7 +15,6 @@ spec:
     - name: pathToContext
       description: The build context used by Kaniko
       default: /workspace/git-app-repo
-
   steps:
     - name: build-and-push
       image: gcr.io/kaniko-project/executor:v0.10.0

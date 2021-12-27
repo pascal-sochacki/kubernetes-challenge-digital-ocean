@@ -3,6 +3,9 @@ kind: Pipeline
 metadata:
   name: my-pipeline
 spec:
+  resources:
+    - name: git-app-repo
+      type: git
   tasks:
     - name: build
       taskRef:
