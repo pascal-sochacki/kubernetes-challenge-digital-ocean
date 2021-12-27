@@ -1,0 +1,3 @@
+harbor:
+  persistence:
+    enabled: false
