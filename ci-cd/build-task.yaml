@@ -17,7 +17,7 @@ spec:
         type: git
   steps:
     - name: build-and-push
-      image: gcr.io/kaniko-project/executor:v0.10.0
+      image: gcr.io/kaniko-project/executor:v1.7.0
       command:
         - /kaniko/executor
       args:
