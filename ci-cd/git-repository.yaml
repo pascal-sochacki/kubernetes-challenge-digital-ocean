@@ -5,7 +5,7 @@ metadata:
 spec:
   type: git
   params:
-  - name: url
-    value: https://github.com/pascal-sochacki/http2
-  - name: revision
-    value: master
+    - name: url
+      value: https://github.com/pascal-sochacki/http2
+    - name: revision
+      value: master

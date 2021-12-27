@@ -4,22 +4,15 @@ kind: Task
 metadata:
   name: build-docker-image
 spec:
+  params:
+    - name: contextDir
+      description: "The context directory within the repository for sources"
+      default: src
   resources:
     inputs:
-      - name: git-app-repository
+      - name: source
         type: git
-  params:
-    - name: pathToDockerFile
-      description: Path to Dockerfile
-      default: Dockerfile
-    - name: pathToContext
-      description: The build context used by Kaniko
-      default: /workspace/git-app-repo
   steps:
-    - name: build-and-push
-      image: gcr.io/kaniko-project/executor:v0.10.0
-      env:
-      - name: "DOCKER_CONFIG"
-        value: "/builder/home/.docker/"
-      command:
-      - /kaniko/executor
+    - name: ls-build-sources
+      image: busybox
+      command: ["ls", "-ltr", "/workspace/source/$(inputs.params.contextDir)"]

@@ -4,9 +4,13 @@ metadata:
   name: my-pipeline
 spec:
   resources:
-    - name: git-app-repo
+    - name: git-app-repository
       type: git
   tasks:
     - name: build
       taskRef:
         name: build-docker-image
+      resources:
+        inputs:
+          - name: git-app-repository
+            resource: git-app-repository
