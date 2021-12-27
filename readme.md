@@ -11,7 +11,7 @@ GitOps is today the way you automate deployment pipelines within Kubernetes itse
 
 `Log[1]:` Install ArgoCD, Harbor and Tekton. Create an ArgoCD sync for pipeline resources
 
-`Log[2]:` Create a GitOps CI/CD pipeline using ArgoCD and Tekton.
+`Log[2]:` Create a GitOps CI/CD pipeline using ArgoCD and Tekton. Build the docker image using kaniko.
 
 #### Gotchas:
 
