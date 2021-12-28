@@ -9,12 +9,22 @@ spec:
     - name: image-registry
       type: image
   tasks:
+    - name: find-version
+      taskRef:
+        name: find-mvn-version
+      resources:
+        inputs:
+          - name: source
+            resource: git-app-repository
     - name: build
+      params:
+        - name: tag
+          value: $(tasks.find-version.results.projectVersion)
       taskRef:
         name: build-docker-image
       resources:
         inputs:
-          - name: git-app-repository
+          - name: source
             resource: git-app-repository
         outputs:
           - name: image-registry

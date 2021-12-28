@@ -25,25 +25,11 @@ spec:
       - name: image-registry
         type: image
   steps:
-    - name: find-version
-      image: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641
-      workingDir: $(params.pathToContext)
-      script: |
-        #!/usr/bin/env bash
-        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo $VERSION
-        echo $VERSION > /workspace/version
-        $VERSION=$(cat /workspace/version)
-        echo $VERSION
-        cat /workspace/version
-    - name: print-version
-      image: gcr.io/kaniko-project/executor:v1.7.0
-      script: |
-        cat /workspace/version
-        VERSION=$(cat /workspace/version)
-        echo $VERSION
     - name: build-and-push
       image: gcr.io/kaniko-project/executor:v1.7.0
-      script: |
-        VERSION=$(cat /workspace/version)
-        /kaniko/executor --dockerfile=$(params.pathToContext)/$(params.pathToDockerFile) --context=$(params.pathToContext) --destination=$(resources.outputs.image-registry.url)/kubernetes-challenge-registry/$(params.imageName):$VERSION
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=$(params.pathToContext)/$(params.pathToDockerFile)
+        - --context=$(params.pathToContext)
+        - --destination=$(resources.outputs.image-registry.url)/kubernetes-challenge-registry/$(params.imageName):$(params.tag)
