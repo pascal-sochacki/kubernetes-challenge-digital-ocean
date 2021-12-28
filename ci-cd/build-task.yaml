@@ -30,13 +30,20 @@ spec:
       workingDir: $(params.pathToContext)
       script: |
         #!/usr/bin/env bash
-        VERSION=$(/usr/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo $VERSION
         echo $VERSION > /workspace/version
+        $VERSION=$(cat /workspace/version)
+        echo $VERSION
+        cat /workspace/version
+    - name: print-version
+      image: gcr.io/kaniko-project/executor:v1.7.0
+      script: |
+        cat /workspace/version
+        VERSION=$(cat /workspace/version)
+        echo $VERSION
     - name: build-and-push
       image: gcr.io/kaniko-project/executor:v1.7.0
-      command:
-        - /kaniko/executor
-      args:
-        - --dockerfile=$(params.pathToContext)/$(params.pathToDockerFile)
-        - --context=$(params.pathToContext)
-        - --destination=$(resources.outputs.image-registry.url)/kubernetes-challenge-registry/$(params.imageName):$(cat /workspace/version)
+      script: |
+        VERSION=$(cat /workspace/version)
+        /kaniko/executor --dockerfile=$(params.pathToContext)/$(params.pathToDockerFile) --context=$(params.pathToContext) --destination=$(resources.outputs.image-registry.url)/kubernetes-challenge-registry/$(params.imageName):$VERSION
