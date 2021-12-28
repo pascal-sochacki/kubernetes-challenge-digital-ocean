@@ -9,3 +9,4 @@ export.sh
 
 infra/*.lock
 infra/charts
+ci-cd/secrets
