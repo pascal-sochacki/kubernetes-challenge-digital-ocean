@@ -6,6 +6,6 @@ spec:
   type: git
   params:
     - name: url
-      value: https://github.com/pascal-sochacki/http2
+      value: https://github.com/pascal-sochacki/kubernetes-challenge-digital-ocean-app
     - name: revision
-      value: master
+      value: main
