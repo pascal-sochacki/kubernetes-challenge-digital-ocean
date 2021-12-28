@@ -6,5 +6,5 @@ spec:
   type: image
   params:
     - name: url
-      value: infra-harbor-registry.default.svc.cluster.local:5000
+      value: registry.digitalocean.com
 

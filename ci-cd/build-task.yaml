@@ -32,4 +32,4 @@ spec:
       args:
         - --dockerfile=$(params.pathToContext)/$(params.pathToDockerFile)
         - --context=$(params.pathToContext)
-        - --destination=$(resources.outputs.image-registry.url)/$(params.imageName)/$(params.imageName):$(params.tag)
+        - --destination=$(resources.outputs.image-registry.url)/kubernetes-challenge-registry/$(params.imageName):$(params.tag)
