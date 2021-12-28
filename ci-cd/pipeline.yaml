@@ -6,6 +6,8 @@ spec:
   resources:
     - name: git-app-repository
       type: git
+    - name: image-registry
+      type: image
   tasks:
     - name: build
       taskRef:
@@ -14,3 +16,6 @@ spec:
         inputs:
           - name: git-app-repository
             resource: git-app-repository
+        outputs:
+          - name: image-registry
+            resource: image-registry

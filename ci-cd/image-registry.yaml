@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: image-registry
+spec:
+  type: image
+  params:
+    - name: url
+      value: infra-harbor-registry.default.svc.cluster.local:5000
+
