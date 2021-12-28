@@ -6,7 +6,7 @@ metadata:
 spec:
   params:
     - name: pathToContext
-      description: The build context used by Kaniko
+      description: The build context
       default: /workspace/source
   results:
     - name: projectVersion

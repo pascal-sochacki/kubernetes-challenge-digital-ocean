@@ -29,3 +29,12 @@ spec:
         outputs:
           - name: image-registry
             resource: image-registry
+    - name: sync
+      taskRef:
+        name: sync-task
+      resources:
+        inputs:
+          - name: source
+            resource: git-app-repository
+
+

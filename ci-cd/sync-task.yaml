@@ -12,9 +12,6 @@ spec:
     inputs:
       - name: source
         type: git
-    outputs:
-      - name: image-registry
-        type: image
   steps:
     - name: argocd-app-sync
       image: argoproj/argocd:v2.2.1
