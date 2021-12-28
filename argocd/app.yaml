@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+spec:
+  destination:
+    name: ''
+    namespace: app
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: chart
+    repoURL: 'https://github.com/pascal-sochacki/kubernetes-challenge-digital-ocean-app'
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
