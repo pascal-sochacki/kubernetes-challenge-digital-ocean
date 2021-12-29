@@ -28,9 +28,6 @@ kind: TriggerTemplate
 metadata:
   name: github-template
 spec:
-  params:
-    - name: gitrevision
-    - name: gitrepositoryurl
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
