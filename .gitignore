@@ -10,3 +10,4 @@ export.sh
 infra/*.lock
 infra/charts
 ci-cd/secrets
+infra/externaldns-values.yaml
