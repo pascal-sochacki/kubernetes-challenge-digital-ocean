@@ -70,36 +70,114 @@ worker-pool-u6f2u   Ready    <none>   31h   v1.21.5
 
 Congratulations, you have created a Kubernetes cluster in DigitalOcean.
 
-## Configure the Cluster to run Argocd and Tekton
+## Configure the Cluster to run our needed services
 
-To install Argocd i used the Argocd Helm chart. To follow the installation guide, we will use the `helm` command. 
-```shell
-cd infra
-helm dep up
-helm install infra infra
+We will install multiple services in the cluster using Helm.
+
+1) Argocd: This will allow us to use the principles of GitOps to manage the cluster.
+2) ingress-nginx: This will allow us to access the application from the outside.
+3) external-dns: This will allow us to configure the DNS records for the application. We later want to receive a Webhook
+   from GitHub to deploy the application. This is why we need to configure the external-dns service.
+
+The Helm chart for these services is available in the infra folder. For external-dns there is an additional file
+necessary, which contains a DigitalOcean Token (which i will not share :D ).  
+The same Token can be used as i have done in the previous step. The structure of the files is as follows:
+
 ```
-This should install Argocd. To check if it is installed, we can run
+external-dns:
+  provider: digitalocean
+
+  digitalocean:
+    apiToken: <YourToken>
+
+  interval: "1m"
+
+  policy: sync
+
+  domainFilters: [ '<YourDomain>' ]
+
 ```
-kubectl get pods
+
+Just copy the file and change it accordingly. After this we can install the services
+using `helm install infra infra -f <YOUR_FILENAME>`.
+
+#### Additional links:
+
+1) [How To Automatically Manage DNS Records From DigitalOcean Kubernetes Using ExternalDNS](https://www.digitalocean.com/community/tutorials/how-to-automatically-manage-dns-records-from-digitalocean-kubernetes-using-externaldns)
+2) [How To Set Up an Nginx Ingress on DigitalOcean Kubernetes Using Helm](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-on-digitalocean-kubernetes-using-helm)
+
+After this we will install tekton. I didn't find a helm chart for tekton, so i will use the offical install guide.
+Basically, we execute the following command:
+
 ```
-We should see something like this:
+kubectl apply -f https://storage.googleapis.com/tekton-releases/operator/latest/release.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/operator/main/config/crs/kubernetes/config/all/operator_v1alpha1_config_cr.yaml
 ```
-NAME                                                   READY   STATUS    RESTARTS   AGE
-infra-argocd-application-controller-6cd84b6ff9-r4pbz   1/1     Running   0          7h20m
-infra-argocd-dex-server-66896fbf7d-wbhzb               1/1     Running   0          7h20m
-infra-argocd-redis-5457bddfd8-lj7dx                    1/1     Running   0          7h20m
-infra-argocd-repo-server-6865dfb9cd-gv8xm              1/1     Running   0          7h20m
-infra-argocd-server-ffd7f79c9-x8jnq                    1/1     Running   0          7h20m
+
+#### Additional links:
+
+1) [https://tekton.dev/docs/pipelines/install/](Installing Tekton Pipelines)
+
+## Creating ArgoCD Applications
+
+In this step, we will create two ArgoCD application. One for our Pipeline Resources and the other for the Application.
+ArgoCD is an application that watches for changes in the Git repository and automatically deploys the manifests. So both
+Applications (in the argocd folder) point to two different repositories. One were
+our [Application](https://github.com/pascal-sochacki/kubernetes-challenge-digital-ocean-app) and the other one is
+the [Pipeline Resources](https://github.com/pascal-sochacki/kubernetes-challenge-digital-ocean).
+
 ```
-To visit the dashboard, we can forword the port 8080 to the host machine.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+spec:
+  ...
+  source:
+    path: chart
+    repoURL: 'https://github.com/pascal-sochacki/kubernetes-challenge-digital-ocean-app'
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  project: default
+  ...
+```
+
+```
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ci-cd
+spec:
+  ...
+  source:
+    path: ci-cd
+    repoURL: 'https://github.com/pascal-sochacki/kubernetes-challenge-digital-ocean'
+    targetRevision: main
+  project: default
+  ...
+```
+
+Also there is a additional file (`defaultProject.yaml`) in the Argocd folder, which contains the configuration for the ArgoCD Profile.
+I encoutered a problem with the default ArgoCD profile, so I will do some modifications to the profile.
+The problem was that ArgoCD deleted my PipelineRuns, so we ignore some "dynamic" resources, like PipelineRuns and TaskRuns.
+I encourage you to create two repositories and replace my repositories with your own.
+After this you can easily deploy the Argocd applications using 
+```
+kubectl apply -f argocd
+```
+If you want to see the ArgoCD application, you can use port-forward to see the application.
+Just run the following command:
 ```
 kubectl port-forward svc/infra-argocd-server 8080:80
 ```
-Now we can visit the dashboard at http://localhost:8080. 
+Now you can access the ArgoCD Dashboard. 
 The default username is `admin` and the default password is a little tricky.
 We need to use the `kubectl` command to get the password.
 ```
 kubectl get secrets argocd-initial-admin-secret -o jsonpath={.data.password} | base64 -d | pbcopy
 ```
 The password is now in the clipboard. Paste it in the browser.
-
+You should see the ArgoCD Dashboard.
+![ArgoCD Dashboard](images/ArgoCD.png "ArgoCD Dashboard")
