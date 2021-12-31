@@ -178,6 +178,93 @@ We need to use the `kubectl` command to get the password.
 ```
 kubectl get secrets argocd-initial-admin-secret -o jsonpath={.data.password} | base64 -d | pbcopy
 ```
-The password is now in the clipboard. Paste it in the browser.
-You should see the ArgoCD Dashboard.
+The password is now in the clipboard. Paste it in the browser and click login.
+You should see the ArgoCD Dashboard and hopefully our two Applications.
+
 ![ArgoCD Dashboard](images/ArgoCD.png "ArgoCD Dashboard")
+
+So your Pipeline Resources and Application are now deployed.
+If we are now making changes in our Pipeline Resources or App and push them to the repository,
+ArgoCD will automatically deploy the changes.
+
+#### Additional links:
+
+1) [ArgoCD Documentation](https://argo-cd.readthedocs.io/en/stable/)
+
+## Creating Tekton Pipeline
+
+Tekton is a native Kubernetes pipeline system.
+There are some Objects that together make up a Pipeline.
+First we have a Task, which executes a steps (see `ci-cd/build-task.yaml`).
+This Task builds a Docker image using a kaniko image. ([kaniko github](https://github.com/GoogleContainerTools/kaniko)).
+In a Task we can define params and resources.
+Params can be used to pass values to the Task.
+Resources are used to define the input and output of the Task.
+Resources can be image registries and git repositories.
+These resources need to be defined and applied to the Cluster.
+Argocd should already deployed the resources.
+The definition of the image registry can be found in `ci-cd/image-registry.yaml` and the git repository in `ci-cd/git-repository.yaml`.
+Multiple Tasks can be defined in a Pipeline (see `ci-cd/pipeline.yaml`).
+In addition to the build Task, we have a Task to determine the version of the image.
+In the Task `find-mvn-version` we use the `mvn` command to find the version of the project.
+See more about the task in the file `cd/find-mvn-version.yaml`.
+In order to allow the Pipeline to run, we also need to define some Secrets.
+The secret is used to allow the Pipeline to push the image to the registry.
+As a registry we use the [DigitalOcean Registry](https://cloud.digitalocean.com/registry).
+So you need to create a secret in the Cluster, which contains the username and password for the registry.
+The structure of the secret is:
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-credentials
+  namespace: ci-cd
+  annotations:
+    tekton.dev/docker-0: registry.digitalocean.com
+type: kubernetes.io/basic-auth
+stringData:
+  username: "<YourToken>"
+  password: "<YourToken>"
+```
+Again you can use the same Token for the registry as in Step 1 and 2.
+So with the secret we can now run the Pipeline.
+```
+tkn pipeline start my-pipeline -n ci-cd -s pipeline-sa --showlog
+```
+The Pipeline should now be running. To see the expected output, you can see my output in the video, found in `images/Screen Recording.mov`.
+At the end of the Pipeline, the image should be pushed to the registry.
+
+![Image Registry](images/Registry.png "Image Registry")
+
+This is great! But it would be nice to have a better way to run the Pipeline.
+We don't want to run the Pipeline to run by hand.
+
+### Configuring Tekton to run the Pipeline
+So we configure a EventListener to react on HTTP requests.
+In Step 2 we installed ingress-nginx and external-dns which are used to configure the Listener.
+It sounds difficult, but it is really easy.
+See `ci-cd/EventListener.yaml` for more information.
+We need just three things:
+1) The EventListener
+2) The TriggerTemplate
+3) The Ingress
+
+The Ingress is used to call the Service which is created by the EventListener.
+The EventListener is uses the TriggerTemplate to run the Pipeline.
+Because we installed external-dns, we don't need to configure the DNS records by hand.
+If you have configured your DNS in digitalocean everything is created automatically.
+To configure your DNS check the [digitalocean documentation](https://docs.digitalocean.com/products/networking/dns/).
+This is how it looks like if everything is configured correctly:
+
+![DNS in DigitalOcean](images/DNS.png "DNS in DigitalOcean")
+
+external-dns creates DNS records and also a LoadBalancer with an IP address.
+This URL can now be taken to GitHub to configure a webhook each time a push occurs.
+This Setting can be found here: 
+
+![Github Setting](images/Github.png "Github Setting")
+
+With everything configured the Pipeline should now be running each time a push occurs.
+Let's see this in action in the following video.
+
+![Example](images/Webhook.mov)
